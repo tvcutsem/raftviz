@@ -32,8 +32,7 @@ export const frame12PlaygroundIntro = {
     const line2   = addLine(56, 'Drag from one node to another to add or remove a network partition', { size: 16 });
     const line3   = addLine(64, '↗ Send Request — inject SET x=N (replicated by the leader when one exists)', { size: 16 });
     const line4   = addLine(72, 'Speed slider — slow down (0.5×) or fast-forward (6×) the simulation', { size: 16 });
-    const line5   = addLine(80, 'Wipe stable storage on crash — optional erase of term, vote, and log on crash', { size: 16 });
-    const line6   = addLine(88, 'Pseudocode on the right still highlights in real time as events occur', { size: 16 });
+    const line6   = addLine(80, 'Pseudocode on the right still highlights in real time as events occur', { size: 16 });
 
     timeline
       .after(300, () => {
@@ -76,12 +75,10 @@ export const frame12PlaygroundIntro = {
 
       .after(400, () => {
         line4.transition().duration(400).attr('opacity', 1);
-        line5.transition().duration(400).delay(100).attr('opacity', 1);
       })
       .waitForResume(() => {
         layout.setSubtitle(
-          'Adjust <strong>Speed</strong> to study slowly, or enable <strong>Wipe stable storage on crash</strong> ' +
-          'to simulate total disk loss'
+          'Adjust <strong>Speed</strong> to study the simulation slowly, or fast-forward through it'
         );
       })
 
