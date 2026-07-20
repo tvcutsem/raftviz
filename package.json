@@ -1,0 +1,15 @@
+{
+  "name": "raft-viz",
+  "version": "1.0.0",
+  "description": "An interactive, step-by-step visualisation of the Raft consensus algorithm.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "test:unit":  "node test/simulation.test.js",
+    "test:smoke": "node test/smoke.js",
+    "test":       "npm run test:unit && npm run test:smoke"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}

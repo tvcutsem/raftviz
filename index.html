@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RaftViz</title>
+  <link rel="stylesheet" href="styles/raft.css">
+</head>
+<body>
+
+  <header id="header">
+    <nav id="nav">
+      <div class="nav-controls">
+        <button id="btn-prev"   class="btn-nav" title="Previous scene (left arrow)" disabled>&#8592;</button>
+        <button id="btn-replay" class="btn-nav" title="Replay this scene (R)">&#8635;</button>
+        <button id="btn-next"   class="btn-nav" title="Next scene (right arrow)">&#8594;</button>
+      </div>
+
+      <div class="nav-title">RaftViz</div>
+
+      <div class="nav-scene">
+        <span id="scene-title" class="scene-title-text">—</span>
+        <div class="dropdown" id="scene-dropdown">
+          <button id="btn-menu" class="btn-nav btn-menu" title="All scenes">&#9660;</button>
+          <ul id="scene-menu" class="scene-menu hidden"></ul>
+        </div>
+        <button id="btn-theme" class="btn-nav" title="Toggle light/dark mode">&#9790;</button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <div id="viz-pane">
+      <div id="chart"></div>
+      <div id="subtitle-bar">
+        <span id="subtitle"></span>
+        <button id="btn-resume" class="btn-resume hidden" disabled>Continue &#9654;</button>
+      </div>
+    </div>
+
+    <aside id="code-pane" class="pane-collapsed">
+      <div class="pseudo-wrapper">
+        <div class="pseudo-fold-strip">
+          <span class="pseudo-fold-label">Pseudocode</span>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!--
+    D3 v7 is loaded as a UMD global (window.d3) before the ES module code.
+    This lets us vendor a single file without a bundler.
+  -->
+  <script src="vendor/d3.v7.min.js"></script>
+  <script type="module" src="scripts/main.js"></script>
+
+</body>
+</html>
