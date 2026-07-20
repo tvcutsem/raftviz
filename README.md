@@ -65,7 +65,7 @@ you control what happens to it.
 | **Click a node** | Crash it (turns grey, stops responding). Click again to recover it as a follower. |
 | **Drag from one node to another** | Add a network partition — messages between those two nodes are silently dropped. Drag between the same pair again to remove it. A dashed orange line with ⚡ marks active partitions. |
 | **↗ Send Request** | Inject a `SET x=N` command into the cluster. It is sent to the current leader if one exists, otherwise to any live node. |
-| **Speed slider** | Scale simulation speed from 0.5× (slow motion) to 6× (fast-forward). Default is 1×. |
+| **Speed slider** | Scale simulation speed from 0.5× (slow motion) to 3× (fast-forward). Default is 1×. |
 | **Wipe stable storage on crash** | When checked, crashing a node also erases its `currentTerm`, `votedFor`, `log`, and `commitLength` — simulating a node that loses its disk. Off by default. |
 
 ### Suggested scenarios

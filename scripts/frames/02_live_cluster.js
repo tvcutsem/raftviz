@@ -6,7 +6,7 @@
  *   • Click a node          — crash it (turns grey); click again to recover
  *   • Drag node → node      — add a network partition; drag again to remove
  *   • Send Request button   — inject a client command into the cluster
- *   • Speed slider          — scale simulation speed (0.5× – 6×)
+ *   • Speed slider          — scale simulation speed (0.5× – 3×)
  * The Scheduler drives the simulation autonomously; callbacks update all five
  * visual layers (NodeView, LogView, MessageLayer, InspectorView,
  * StateMachineView) and the pseudocode panel in real time.
@@ -63,8 +63,8 @@ const NODE_DEFS = [
 // can never drift. The wide randomization range (min .. min+range) is what
 // breaks the symmetry that otherwise causes two survivors to duel indefinitely.
 //
-const ELECTION_MIN_MS   = 3000;
-const ELECTION_RANGE_MS = 3000; // max = MIN + RANGE = 6000
+const ELECTION_MIN_MS   = 6000;
+const ELECTION_RANGE_MS = 6000; // max = MIN + RANGE = 12000
 
 // ── Frame descriptor ──────────────────────────────────────────────────────────
 
@@ -88,11 +88,11 @@ export const frame02LiveCluster = {
     const nodeIds = NODE_DEFS.map(d => d.id);
     const cluster = new Cluster(nodeIds);
     const scheduler = new Scheduler(cluster, {
-      latencyMs:          500,
-      latencyJitter:      100,
+      latencyMs:          1000,
+      latencyJitter:      200,
       electionTimeoutMin: ELECTION_MIN_MS,
       electionTimeoutMax: ELECTION_MIN_MS + ELECTION_RANGE_MS,
-      heartbeatPeriod:    1000,
+      heartbeatPeriod:    2000,
       speedFactor:        1,
     });
     _activeScheduler = scheduler;
@@ -397,7 +397,7 @@ function _buildControlBar(scheduler, cluster) {
   speedInput.type  = 'range';
   speedInput.id    = 'pg-speed';
   speedInput.min   = '0.5';
-  speedInput.max   = '6';
+  speedInput.max   = '3';
   speedInput.step  = '0.5';
   speedInput.value = '1';
 

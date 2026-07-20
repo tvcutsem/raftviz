@@ -31,7 +31,7 @@ export const frame12PlaygroundIntro = {
     const line1   = addLine(48, 'Click a node to crash it (grey) · click again to recover as a follower', { size: 16 });
     const line2   = addLine(56, 'Drag from one node to another to add or remove a network partition', { size: 16 });
     const line3   = addLine(64, '↗ Send Request — inject SET x=N (replicated by the leader when one exists)', { size: 16 });
-    const line4   = addLine(72, 'Speed slider — slow down (0.5×) or fast-forward (6×) the simulation', { size: 16 });
+    const line4   = addLine(72, 'Speed slider — slow down (0.5×) or fast-forward (3×) the simulation', { size: 16 });
     const line6   = addLine(80, 'Pseudocode on the right still highlights in real time as events occur', { size: 16 });
 
     timeline
