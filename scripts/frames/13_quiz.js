@@ -2,9 +2,12 @@
  * Frame 13 — Quiz
  *
  * A capstone self-check, modelled on the Brown University Rust Book quiz
- * (mdbook-quiz). Four multiple-choice questions, authored in increasing order
+ * (mdbook-quiz). Six multiple-choice questions, authored in increasing order
  * of difficulty, are shown one at a time; the student picks an option and
  * clicks Submit to advance, with NO correctness feedback during the quiz.
+ * The last two questions share a three-node log snapshot (see SNAPSHOT_HTML)
+ * and ask, in the style of Kleppmann's supervision exercise, what events could
+ * have produced it and what values commitLength could take.
  * After the last
  * question a score is shown plus a per-question review revealing the correct
  * answer, the student's own choice, and an explanation.
@@ -17,11 +20,35 @@
 // ── Question bank ───────────────────────────────────────────────────────────
 //
 // Each question: { prompt, options: [string], answer: <index into options>,
-//                  explanation: <HTML string> }
-// `explanation` is author-written trusted HTML (rendered via innerHTML) so it
-// can use <code>/<em>; prompts and options are plain text (textContent).
-// The correct answer deliberately sits at a different position in each
-// question so there is no "always pick the first option" shortcut.
+//                  explanation: <HTML string>, figureHtml?: <HTML string> }
+// `explanation` (and the optional `figureHtml`, shown between prompt and
+// options) are author-written trusted HTML (rendered via innerHTML) so they
+// can use <code>/<em> and small diagram markup; prompts and options are plain
+// text (textContent). The correct answer deliberately sits at a different
+// position in each question so there is no "always pick the first option"
+// shortcut.
+
+// Shared log snapshot for the final two questions. Entries are drawn
+// uniformly — committed vs. uncommitted is deliberately NOT indicated, since
+// that is exactly what the commitLength question asks the student to work out.
+const SNAPSHOT_HTML = (() => {
+  const logs = [
+    ['X', [['m1', 1], ['m2', 1], ['m3', 1]]],
+    ['Y', [['m1', 1], ['m2', 1], ['m4', 2], ['m5', 2]]],
+    ['Z', [['m1', 1], ['m2', 1], ['m4', 2], ['m6', 3]]],
+  ];
+  const rows = logs.map(([id, entries]) => {
+    const boxes = entries.map(([msg, term]) =>
+      `<span class="quiz-log-entry">` +
+      `<span class="quiz-log-msg">${msg}</span>` +
+      `<span class="quiz-log-term">${term}</span>` +
+      `</span>`
+    ).join('');
+    return `<div class="quiz-log-row">` +
+      `<span class="quiz-log-label">log @ ${id}</span>${boxes}</div>`;
+  }).join('');
+  return `<div class="quiz-figure">${rows}</div>`;
+})();
 
 const QUESTIONS = [
   {
@@ -120,6 +147,60 @@ const QUESTIONS = [
       'right to be <em>considered</em>, never the right to erase committed ' +
       'history — so C correctly refuses.',
   },
+  {
+    prompt:
+      'Three nodes are running Raft and currently hold the logs shown below ' +
+      '(each entry is labelled with its message and its term). Which sequence ' +
+      'of events is consistent with how they reached this state?',
+    figureHtml: SNAPSHOT_HTML,
+    options: [
+      'A single leader in term 3 replicated every entry; the logs differ only because some messages are still in flight',
+      'Node X crashed and recovered, losing committed entries — which is why Y and Z hold entries X does not',
+      'm4 was committed under the term-1 leader, before m3 was appended',
+      'X led in term 1 and replicated m1–m2 to all nodes; Y was elected in term 2, appended m4 (copied to Z) and then m5; Z was elected in term 3 and appended m6 — the later entries have not been replicated yet',
+    ],
+    answer: 3,
+    explanation:
+      'The three logs share the committed prefix <code>m1, m2</code> (term 1) ' +
+      'and then diverge — and divergence like this can only arise across ' +
+      '<em>several</em> leaders in <em>different</em> terms, since a single ' +
+      'leader produces identical logs on everyone it reaches. A consistent ' +
+      'history: X was leader in term 1, replicated m1–m2 to a majority ' +
+      '(committing them) and appended m3 locally before it stopped; Y was ' +
+      'elected in term 2, appended m4 and copied it to Z, then appended m5 ' +
+      'that was never replicated; Z was elected in term 3 (with X’s vote — Z’s ' +
+      'last-entry term 2 beats X’s term 1, while Y refuses because its log is ' +
+      'longer at the same term) and appended m6, still in flight. Committed ' +
+      'entries such as m1/m2 live in stable storage and survive a crash, so ' +
+      'they cannot simply be “lost”; and m4 carries term 2, so it cannot ' +
+      'predate the term-1 leader.',
+  },
+  {
+    prompt:
+      'For the same three logs shown below, which statement about the ' +
+      'commitLength variable is correct?',
+    figureHtml: SNAPSHOT_HTML,
+    options: [
+      'commitLength equals each node’s log length: 3 at X, 4 at Y, 4 at Z',
+      'commitLength at X can reach 3, since a leader commits every entry it appends to its log',
+      'commitLength can be at most 2 at X (m3 is not committed) and at most 3 at Y and Z (m4 is committed, but m5 and m6 are not) — and may be lower anywhere if acknowledgements have not yet propagated',
+      'All three nodes must have the same commitLength, since they agree on the committed prefix',
+    ],
+    answer: 2,
+    explanation:
+      '<code>commitLength</code> counts the majority-replicated prefix of the ' +
+      'log — the entries known to be committed — and it is a <em>local</em> ' +
+      'variable that can lag behind reality. m1 and m2 reached all three ' +
+      'nodes, so they are committed; m4 reached a majority (Y and Z) while Y ' +
+      'led in term 2, so it too is committed — even though X never received ' +
+      'it. But m3 (only on X), m5 (only on Y) and m6 (only on Z) each sit on a ' +
+      'single node, so none of them is committed. Hence <code>commitLength' +
+      '</code> is at most 2 at X and at most 3 at Y and Z. It could also be ' +
+      '<em>lower</em> at any node — even 0 — if the acknowledgements, or the ' +
+      'leader’s <code>leaderCommit</code>, have not yet propagated. See ' +
+      'slide 9 (<em>Committing log entries</em>) and slide 7 ' +
+      '(<em>Updating followers’ logs</em>).',
+  },
 ];
 
 // ── Module-level teardown handle ─────────────────────────────────────────────
@@ -153,7 +234,7 @@ export const frame13Quiz = {
     document.getElementById('chart').appendChild(panel);
     _quizPanel = panel;
 
-    layout.setSubtitle('Check your understanding — answer all four questions, then reveal your score');
+    layout.setSubtitle(`Check your understanding — answer all ${QUESTIONS.length} questions, then reveal your score`);
 
     // Fresh state on every entry: the quiz restarts from Q1.
     const state = { idx: 0, answers: new Array(QUESTIONS.length).fill(null) };
@@ -175,6 +256,12 @@ export const frame13Quiz = {
       const prompt = el('p', 'quiz-prompt');
       prompt.textContent = q.prompt;
       inner.appendChild(prompt);
+
+      if (q.figureHtml) {
+        const fig = el('div', 'quiz-figure-wrap');
+        fig.innerHTML = q.figureHtml;   // trusted, author-written HTML
+        inner.appendChild(fig);
+      }
 
       const form = el('form', 'quiz-options');
       q.options.forEach((opt, j) => {
@@ -222,9 +309,9 @@ export const frame13Quiz = {
       inner.appendChild(el('div', 'quiz-score', `You scored ${score} / ${QUESTIONS.length}`));
 
       const remark =
-        score === QUESTIONS.length ? 'Perfect — you have Raft down cold.' :
-        score >= 3                 ? 'Nice work — review the ones you missed below.' :
-                                     'Worth another pass — the explanations below will help.';
+        score === QUESTIONS.length              ? 'Perfect — you have Raft down cold.' :
+        score >= Math.ceil(QUESTIONS.length * 2 / 3) ? 'Nice work — review the ones you missed below.' :
+                                                  'Worth another pass — the explanations below will help.';
       inner.appendChild(el('div', 'quiz-remark', remark));
 
       QUESTIONS.forEach((q, i) => {
@@ -236,6 +323,12 @@ export const frame13Quiz = {
         const rp = el('p', 'quiz-review-prompt');
         rp.textContent = q.prompt;
         item.appendChild(rp);
+
+        if (q.figureHtml) {
+          const fig = el('div', 'quiz-figure-wrap');
+          fig.innerHTML = q.figureHtml;   // trusted, author-written HTML
+          item.appendChild(fig);
+        }
 
         q.options.forEach((opt, j) => {
           const isCorrect = j === q.answer;

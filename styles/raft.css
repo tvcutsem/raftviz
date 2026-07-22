@@ -656,3 +656,45 @@ svg text {
 .quiz-explanation em { color: var(--text); font-style: italic; }
 
 .quiz-inner > .quiz-btn { margin-top: 22px; }
+
+/* Log snapshot figure shared by the final two (snapshot) questions. Entries
+   are drawn uniformly — committed vs. uncommitted is intentionally not shown. */
+.quiz-figure-wrap { margin: 4px 0 18px; }
+.quiz-figure {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.quiz-log-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.quiz-log-label {
+  flex: 0 0 auto;
+  min-width: 74px;
+  margin-right: 6px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+}
+.quiz-log-entry {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 34px;
+  padding: 4px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  line-height: 1.25;
+}
+.quiz-log-msg {
+  font-size: 0.9rem;
+  color: var(--text);
+}
+.quiz-log-term {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}

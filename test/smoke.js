@@ -353,7 +353,7 @@ try {
   suite('Scene 14 — Quiz (interactive multiple-choice)');
 
   // Correct option index per question — must match QUESTIONS in 13_quiz.js.
-  const KEY = [1, 2, 2, 1, 3];
+  const KEY = [2, 2, 1, 3, 3, 2];
 
   await page.goto(`${BASE}#quiz`);
   await waitFor(page, () =>
@@ -377,29 +377,44 @@ try {
   assert(!(await isDisabledSel(page, '.quiz-btn')),
     'submit enabled after selecting an option');
 
-  // Answer every question correctly.
+  // Answer every question correctly. The final two questions (the shared
+  // log-snapshot pair) additionally render a .quiz-figure with three log rows
+  // above the options; the earlier questions must not.
+  let sawFigure = false;
   for (let i = 0; i < KEY.length; i++) {
     await page.waitForSelector('.quiz-option input');
+    assert((await textOf(page, '.quiz-progress')).includes(`${i + 1} of ${KEY.length}`),
+      `question ${i + 1} of ${KEY.length} shown`);
+    const figRows = await count(page, '.quiz-figure .quiz-log-row');
+    if (i >= 4) {
+      assert(figRows === 3, `snapshot figure with three log rows on question ${i + 1}`);
+      sawFigure = true;
+    } else {
+      assert(figRows === 0, `no snapshot figure on question ${i + 1}`);
+    }
     await page.locator('.quiz-option input').nth(KEY[i]).check();
     await page.click('.quiz-btn');
   }
+  assert(sawFigure, 'the snapshot questions rendered a log figure');
 
   // Results screen: perfect score + full review.
   await page.waitForSelector('.quiz-score', { timeout: 5_000 });
   const score = await textOf(page, '.quiz-score');
-  assert(score.includes('5 / 5'), `perfect score shown (got "${score}")`);
-  assert((await count(page, '.quiz-review-item')) === 5, 'review lists all five questions');
-  assert((await count(page, '.quiz-explanation')) === 5,
+  assert(score.includes('6 / 6'), `perfect score shown (got "${score}")`);
+  assert((await count(page, '.quiz-review-item')) === 6, 'review lists all six questions');
+  assert((await count(page, '.quiz-explanation')) === 6,
     'each reviewed question shows an explanation');
-  assert((await count(page, '.quiz-review-option.correct')) === 5,
+  assert((await count(page, '.quiz-review-option.correct')) === 6,
     'the correct option is marked in each question');
   assert((await count(page, '.quiz-review-option.chosen-wrong')) === 0,
     'no wrong picks marked after a perfect run');
+  assert((await count(page, '.quiz-review-item .quiz-figure')) === 2,
+    'the two snapshot questions show the log figure in the review');
 
   // Retry returns to question 1.
   await page.click('.quiz-btn');  // the lone Retry button on the results screen
   await page.waitForSelector('.quiz-prompt', { timeout: 5_000 });
-  assert((await textOf(page, '.quiz-progress')).includes('1 of 5'),
+  assert((await textOf(page, '.quiz-progress')).includes('1 of 6'),
     'Retry returns to question 1');
 
   // Teardown: navigating away removes the overlay.
