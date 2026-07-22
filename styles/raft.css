@@ -523,19 +523,6 @@ svg text {
   color: var(--text-muted);
 }
 
-.quiz-difficulty {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #fff;
-  padding: 2px 9px;
-  border-radius: 999px;
-}
-.quiz-difficulty.diff-easy   { background: var(--leader); }
-.quiz-difficulty.diff-medium { background: var(--candidate); }
-.quiz-difficulty.diff-hard   { background: var(--accent); }
-
 .quiz-prompt {
   font-size: 1.12rem;
   line-height: 1.5;

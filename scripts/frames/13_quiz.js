@@ -2,9 +2,10 @@
  * Frame 13 — Quiz
  *
  * A capstone self-check, modelled on the Brown University Rust Book quiz
- * (mdbook-quiz). Five multiple-choice questions (2 easy, 2 challenging, 1 hard)
- * are shown one at a time; the student picks an option and clicks Submit to
- * advance, with NO correctness feedback during the quiz. After the last
+ * (mdbook-quiz). Five multiple-choice questions, authored in increasing order
+ * of difficulty, are shown one at a time; the student picks an option and
+ * clicks Submit to advance, with NO correctness feedback during the quiz.
+ * After the last
  * question a score is shown plus a per-question review revealing the correct
  * answer, the student's own choice, and an explanation.
  *
@@ -16,7 +17,7 @@
 // ── Question bank ───────────────────────────────────────────────────────────
 //
 // Each question: { prompt, options: [string], answer: <index into options>,
-//                  explanation: <HTML string>, difficulty: 'easy'|'medium'|'hard' }
+//                  explanation: <HTML string> }
 // `explanation` is author-written trusted HTML (rendered via innerHTML) so it
 // can use <code>/<em>; prompts and options are plain text (textContent).
 // The correct answer deliberately sits at a different position in each
@@ -24,7 +25,6 @@
 
 const QUESTIONS = [
   {
-    difficulty: 'easy',
     prompt:
       'In a healthy Raft cluster during normal operation, which server do ' +
       'clients send their requests to (e.g. to append a new command to the log)?',
@@ -46,7 +46,6 @@ const QUESTIONS = [
       'request is <em>forwarded to <code>currentLeader</code></em>.',
   },
   {
-    difficulty: 'easy',
     prompt:
       'A follower has been receiving regular heartbeats from the current ' +
       'leader. What would cause it to give up on that leader, become a ' +
@@ -68,7 +67,6 @@ const QUESTIONS = [
       '(<em>Initialisation</em>).',
   },
   {
-    difficulty: 'medium',
     prompt:
       'A leader in a 5-server cluster appends a new command; so far it is ' +
       'stored on the leader and one follower (2 of 5). Is the entry committed ' +
@@ -90,7 +88,6 @@ const QUESTIONS = [
       '<code>minAcks := ⌈(|nodes| + 1) / 2⌉</code>.',
   },
   {
-    difficulty: 'medium',
     prompt:
       'Two followers time out at almost the same moment, both become ' +
       'candidates in the same term, and the votes split so neither reaches a ' +
@@ -113,7 +110,6 @@ const QUESTIONS = [
       '(<em>Voting on a new leader</em>).',
   },
   {
-    difficulty: 'hard',
     prompt:
       'Candidate D sends node C a VoteRequest for a higher term than C has ' +
       "seen, and C hasn't voted yet this term. But C's log has a committed " +
@@ -146,8 +142,6 @@ const QUESTIONS = [
       'history — so C correctly refuses.',
   },
 ];
-
-const DIFFICULTY_LABEL = { easy: 'Easy', medium: 'Challenging', hard: 'Hard' };
 
 // ── Module-level teardown handle ─────────────────────────────────────────────
 //
@@ -197,7 +191,6 @@ export const frame13Quiz = {
 
       const meta = el('div', 'quiz-meta');
       meta.appendChild(el('span', 'quiz-progress', `Question ${i + 1} of ${QUESTIONS.length}`));
-      meta.appendChild(el('span', `quiz-difficulty diff-${q.difficulty}`, DIFFICULTY_LABEL[q.difficulty]));
       inner.appendChild(meta);
 
       const prompt = el('p', 'quiz-prompt');
