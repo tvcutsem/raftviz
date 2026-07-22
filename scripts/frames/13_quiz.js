@@ -2,7 +2,7 @@
  * Frame 13 — Quiz
  *
  * A capstone self-check, modelled on the Brown University Rust Book quiz
- * (mdbook-quiz). Five multiple-choice questions, authored in increasing order
+ * (mdbook-quiz). Four multiple-choice questions, authored in increasing order
  * of difficulty, are shown one at a time; the student picks an option and
  * clicks Submit to advance, with NO correctness feedback during the quiz.
  * After the last
@@ -24,27 +24,6 @@
 // question so there is no "always pick the first option" shortcut.
 
 const QUESTIONS = [
-  {
-    prompt:
-      'In a healthy Raft cluster during normal operation, which server do ' +
-      'clients send their requests to (e.g. to append a new command to the log)?',
-    options: [
-      'Any follower, whichever is closest',
-      'The leader',
-      'A randomly selected candidate',
-      'All servers at once, which then vote on the request',
-    ],
-    answer: 1,
-    explanation:
-      'Raft uses <em>strong leadership</em> — at any time there is at most one ' +
-      'leader, and all client requests flow through it. The leader appends the ' +
-      'command to its own log and replicates it to the followers. Followers ' +
-      'redirect clients to the leader; candidates exist only transiently during ' +
-      'an election and never serve requests. See slide 4 ' +
-      '(<em>Broadcasting messages</em>) in the pseudocode panel: only when ' +
-      '<code>currentRole = leader</code> is the command appended — otherwise the ' +
-      'request is <em>forwarded to <code>currentLeader</code></em>.',
-  },
   {
     prompt:
       'A follower has been receiving regular heartbeats from the current ' +
@@ -174,7 +153,7 @@ export const frame13Quiz = {
     document.getElementById('chart').appendChild(panel);
     _quizPanel = panel;
 
-    layout.setSubtitle('Check your understanding — answer all five questions, then reveal your score');
+    layout.setSubtitle('Check your understanding — answer all four questions, then reveal your score');
 
     // Fresh state on every entry: the quiz restarts from Q1.
     const state = { idx: 0, answers: new Array(QUESTIONS.length).fill(null) };
