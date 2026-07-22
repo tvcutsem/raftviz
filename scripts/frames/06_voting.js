@@ -52,21 +52,20 @@ export const frame06Voting = {
         fadeInNodes(nodeViews);
         nodeViews.get('A').setRole('candidate');
         inspViews.get('A').update(aNode);
+        _panel.highlight(...HL.VOTE_REQ_SEND); // A broadcasts the VoteRequest
         layout.setSubtitle(
-          'Node A is now a <em>candidate</em> in term 1 — it sends a ' +
-          'VoteRequest to every peer'
+          'Node A is now a <em>candidate</em> in term 1 — it broadcasts a ' +
+          'VoteRequest to B and C'
         );
       })
+      .waitForResume()
 
       // VoteRequest dots fly from A to B and C
       .after(700, () => {
-        _panel.highlight(...HL.VOTE_REQ_SEND);
         msgLayer.send(voteReq, nodeViews.get('A'), nodeViews.get('B'), LATENCY);
         msgLayer.send(voteReq, nodeViews.get('A'), nodeViews.get('C'), LATENCY);
-        layout.setSubtitle(
-          '<em>VoteRequest(cTerm=1, cLogLength=0)</em> is in flight to B and C'
-        );
       })
+      .waitForResume()
 
       // B receives VoteRequest → highlight check logic; pause here so the
       // student can read the evaluation before seeing the outcome

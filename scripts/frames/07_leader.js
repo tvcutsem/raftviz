@@ -125,7 +125,9 @@ export const frame07Leader = {
         nodeViews.get('B').resetElectionTimer();
         nodeViews.get('C').resetElectionTimer();
 
-        _panel.highlight(...HL.HEARTBEAT);
+        // Follower's view: term = currentTerm sets currentLeader ← A (idx 6–7),
+        // then the empty LogRequest is accepted and acked (HL.LOG_REQUEST_OK).
+        _panel.highlight(6, [6, 7, 11, 12, 13, 14]);
       })
       .waitForResume(() => {
         layout.setSubtitle(

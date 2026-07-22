@@ -39,6 +39,8 @@ export const frame04RaftInit = {
           'Three nodes start as <em>followers</em> in term 0 — stable storage is empty'
         );
       })
+      // Let the reader take in the intro before moving on
+      .waitForResume()
 
       // Highlight init pseudocode
       .after(700, () => {
