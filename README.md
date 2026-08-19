@@ -1,11 +1,27 @@
 # RaftViz
 
-An interactive, step-by-step visualisation of the Raft consensus algorithm,
-based on Martin Kleppmann's *Concurrent and Distributed Systems* Lecture notes.
+An interactive, step-by-step visualisation of the Raft consensus algorithm.
+
+This material is used as part of my Distributed Systems class at KU Leuven university.
+
+It was inspired by, and draws material from, three primary sources:
+
+  * The main inspiration came from Ben Johnson's wonderful [visualization of Raft](https://thesecretlivesofdata.com/raft/).
+
+  * The algorithm pseudocode is taken from Martin Kleppmann's excellent [*Concurrent and Distributed Systems*](https://www.cl.cam.ac.uk/teaching/2526/ConcDisSys/dist-sys-notes.pdf)
+Lecture notes.
+
+  * The interactive quiz at the end is inspired by Will Crichton's fork of the [Rust Book](https://rust-book.cs.brown.edu/), which includes similar interactive quizzes to get students to engage with the material.
+
+## GenAI disclaimer
+
+This codebase was ["agentic engineered"](https://simonwillison.net/guides/agentic-engineering-patterns/what-is-agentic-engineering/) (as in "not vibe-coded") with assistance from a variety of language models and coding harnesses, with Claude Opus 4.x doing most of the heavy lifting.
 
 ---
 
 ## Quick start
+
+The visualization runs as a zero-build, 100% Javascript/HTML/CSS static site.
 
 ```bash
 # From the raftviz/ directory:
@@ -66,7 +82,6 @@ you control what happens to it.
 | **Drag from one node to another** | Add a network partition — messages between those two nodes are silently dropped. Drag between the same pair again to remove it. A dashed orange line with ⚡ marks active partitions. |
 | **↗ Send Request** | Inject a `SET x=N` command into the cluster. It is sent to the current leader if one exists, otherwise to any live node. |
 | **Speed slider** | Scale simulation speed from 0.5× (slow motion) to 3× (fast-forward). Default is 1×. |
-| **Wipe stable storage on crash** | When checked, crashing a node also erases its `currentTerm`, `votedFor`, `log`, and `commitLength` — simulating a node that loses its disk. Off by default. |
 
 ### Suggested scenarios
 
@@ -104,18 +119,6 @@ Crash two of the three nodes. The sole survivor cannot reach a quorum of two,
 so no elections succeed and no commands are committed — the cluster is
 *unavailable* but not incorrect. This illustrates the CAP trade-off: Raft
 chooses consistency over availability when too many nodes fail.
-
-**6. Wipe stable storage on crash**  
-Enable *Wipe stable storage on crash*, then crash and recover a node
-mid-election. Watch how the node rejoins with a reset term and an empty log,
-and how the cluster safely brings it back in sync without violating safety.
-Compare this to the default behaviour (disk survives crash) to see why
-persistent storage matters.
-
-**7. Slow it down**  
-Drag the speed slider to 0.5× and repeat any scenario above. At half speed you
-can read each variable in the inspector panels as it changes and correlate it
-with the highlighted pseudocode line by line.
 
 ---
 
@@ -197,7 +200,6 @@ raftviz/
         ├── _cluster_helpers.js Shared scene-building utilities
         ├── 00_title.js         Scene 1 — Welcome
         ├── 01_overview.js      Scene 2 — Overview
-        ├── 12_playground_intro.js  Scene 12 — Playground transition
         ├── 02_live_cluster.js  Scene 13 — Live sandbox
         ├── 03_state_diagram.js Scene 3 — Role transitions
         ├── 04_raft_init.js     Scene 4 — Initialisation
@@ -207,7 +209,8 @@ raftviz/
         ├── 08_replication.js   Scene 8 — Broadcasting & replication
         ├── 09_log_request.js   Scene 9 — Followers receive LogRequest
         ├── 10_log_response.js  Scene 10 — Leader commits
-        └── 11_crash_reelection.js  Scene 11 — Leader crash & re-election
+        ├── 11_crash_reelection.js  Scene 11 — Leader crash & re-election
+        └── 12_playground_intro.js  Scene 12 — Playground transition
 ```
 
 ---
