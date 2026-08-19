@@ -215,21 +215,19 @@ raftviz/
 
 ---
 
-## Running the unit tests
+## Tests
 
 ```bash
-# From raftviz/:
-node test/simulation.test.js
+npm run test:unit
 ```
 
-These tests cover the Raft pseudocode handler functions (translated to JS).
+These test the functional correctness of the Raft pseudocode handler functions (pseudocode translated to executable JS).
 
 ```bash
-# From raftviz/:
-node test/smoke.js
+npm run test:smoke
 ```
 
-Runs a smoke test by stepping through all the scenes in a headless browser and inspecting the rendered output (requires `playwright` as a dev dependency).
+This runs a smoke test by stepping through all the scenes in a headless browser and inspecting the rendered output (requires `playwright` as a dev dependency).
 
 ---
 
