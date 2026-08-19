@@ -15,7 +15,7 @@ Lecture notes.
 
 ## GenAI disclaimer
 
-This codebase was ["agentic engineered"](https://simonwillison.net/guides/agentic-engineering-patterns/what-is-agentic-engineering/) (as in "not vibe-coded") with assistance from a variety of language models and coding harnesses, with Claude Opus 4.x doing most of the heavy lifting.
+This codebase was ["agentic engineered"](https://simonwillison.net/guides/agentic-engineering-patterns/what-is-agentic-engineering/) (as in ["not vibe coded"](https://simonwillison.net/guides/agentic-engineering-patterns/what-is-agentic-engineering/#isnt-this-just-vibe-coding)) with assistance from a variety of language models and coding harnesses, with Claude Opus 4.x doing most of the heavy lifting. Artifacts related to agentic development (such as SPEC.md and CLAUDE.md) are deliberately excluded from this repo.
 
 ---
 
@@ -223,6 +223,13 @@ node test/simulation.test.js
 ```
 
 These tests cover the Raft pseudocode handler functions (translated to JS).
+
+```bash
+# From raftviz/:
+node test/smoke.js
+```
+
+Runs a smoke test by stepping through all the scenes in a headless browser and inspecting the rendered output (requires `playwright` as a dev dependency).
 
 ---
 
