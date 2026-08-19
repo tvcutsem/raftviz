@@ -151,6 +151,48 @@ try {
     'stale "(Phase 3)" placeholder text is gone');
   assert((await nodeRole(page, 'A')) === null, 'no cluster nodes in title scene');
 
+  // ── 1b. Initialisation scene ────────────────────────────────────────────────
+  suite('Scene 4 — Initialisation (three followers in term 0)');
+
+  await page.evaluate(() => { window.location.hash = 'raft-init'; });
+  await waitFor(page, () =>
+    document.getElementById('scene-title')?.textContent.includes('4 / 14'));
+  await waitFor(page, AT_PAUSE);
+
+  const t4 = await sceneTitle(page);
+  assert(t4.includes('4 / 14'), `scene counter "4 / 14" (got "${t4}")`);
+
+  const roles4 = await Promise.all(['A', 'B', 'C'].map(id => nodeRole(page, id)));
+  assert(roles4.every(r => r === 'follower'),
+    `all three nodes start as followers (roles: ${roles4.join(', ')})`);
+  assert((await count(page, '.log-block')) === 0, 'stable storage starts empty (no log blocks)');
+
+  // Every inspector should report currentTerm = 0 on a fresh cluster.
+  const terms4 = await page.evaluate(() =>
+    [...document.querySelectorAll('.inspector')].map(insp => {
+      const row = [...insp.querySelectorAll('.insp-row')]
+        .find(r => r.textContent.includes('currentTerm'));
+      return row?.querySelectorAll('text')[1]?.textContent ?? null;
+    }));
+  assert(terms4.length === 3 && terms4.every(v => v === '0'),
+    `all inspectors show currentTerm = 0 (got ${JSON.stringify(terms4)})`);
+
+  assert(!(await hasClass(page, '#code-pane', 'pane-collapsed')), 'pseudocode pane is open');
+  const sl4a = await pseudoLabel(page);
+  assert(sl4a.includes('1 / 9'), `pseudocode slide "1 / 9" (got "${sl4a}")`);
+  // Pause 1 is the intro beat added in cdacde8 — it precedes any highlight.
+  assert((await hlCount(page)) === 0, 'no pseudocode lines highlighted at the intro pause');
+
+  await advancePause(page);  // pause 1 → pause 2 (HL.INIT)
+  assert((await hlCount(page)) > 0, 'init pseudocode lines highlighted at pause 2');
+  const sub4b = await subtitle(page);
+  assert(sub4b.includes('currentTerm'), `subtitle explains currentTerm (got "${sub4b}")`);
+
+  await advancePause(page);  // pause 2 → pause 3 (election timers start)
+  const sub4c = await subtitle(page);
+  assert(sub4c.includes('election timer'),
+    `subtitle explains the randomised election timer (got "${sub4c}")`);
+
   // ── 2. Election timeout scene ───────────────────────────────────────────────
   suite('Scene 5 — Election Timeout (first pause: A becomes candidate)');
 
@@ -183,8 +225,18 @@ try {
   const t6 = await sceneTitle(page);
   assert(t6.includes('6 / 14'), `scene counter "6 / 14" (got "${t6}")`);
 
-  const sl6 = await pseudoLabel(page);
-  assert(sl6.includes('2 / 9'), `pseudocode advances to slide 2/9 (got "${sl6}")`);
+  // Pause 1 shows the candidate's *send* side (slide 1, lines 16–19).
+  const sl6a = await pseudoLabel(page);
+  assert(sl6a.includes('1 / 9'),
+    `pause 1 highlights the VoteRequest broadcast on slide 1/9 (got "${sl6a}")`);
+
+  // Pause 2 = VoteRequest dots in flight; pause 3 = B evaluates the request,
+  // which is the first `on receiving VoteRequest` highlight (slide 2).
+  await advancePause(page);  // pause 1 → pause 2
+  await advancePause(page);  // pause 2 → pause 3
+
+  const sl6b = await pseudoLabel(page);
+  assert(sl6b.includes('2 / 9'), `pseudocode advances to slide 2/9 (got "${sl6b}")`);
 
   // ── 4. Becoming leader scene ────────────────────────────────────────────────
   suite('Scene 7 — Becoming Leader (A wins quorum after two Continue clicks)');
