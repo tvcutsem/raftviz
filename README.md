@@ -8,6 +8,8 @@ An interactive, step-by-step visualisation of the Raft consensus algorithm.
 node shows its live Raft variables and its log; the panel on the right
 highlights the algorithm pseudocode being executed.</sup>
 
+**→ [Live version](https://tvcutsem.github.io/raftviz)** - this repo hosted via Github pages.
+
 **→ [Guided tour of the visualisation](docs/GUIDE.md)** — what each scene shows,
 the interactive sandbox, keyboard controls, and the colour language.
 
