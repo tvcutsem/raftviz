@@ -139,14 +139,6 @@ The `.gif` and `.png` assets are committed, since the docs embed them. The
 `.mp4` files are gitignored — nothing in the docs links to them, so they stay
 out of git history; rerun the command whenever you need them.
 
-Two details keep the output tightly framed. The chart SVG has a fixed
-`viewBox="0 0 1000 600"`, and most scenes leave part of that space empty, so the
-tool retargets the `viewBox` onto the bounding box of what is actually drawn and
-then resizes the viewport to match, leaving no letterboxed background. Because a
-recording's frame size is fixed when it starts, clips are rehearsed once and
-measured at the end — when the logs are at full length — so nothing is clipped
-mid-take.
-
 Add a new asset by appending an entry to the `ASSETS` array; each one is a name,
 a caption, and an `async run(page)` that navigates and advances the timeline.
 
