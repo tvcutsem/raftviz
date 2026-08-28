@@ -376,13 +376,13 @@ const ASSETS = [
   {
     name: 'shot-state-diagram',
     kind: 'shot',
-    caption: 'Scene 3 — follower / candidate / leader role transitions',
+    caption: 'Scene 3 — all six follower / candidate / leader role transitions',
     async run(page) {
       await gotoScene(page, 'state-diagram');
       // The scene reveals one transition arrow per step, so capture at the
-      // last of its four pauses to get the complete diagram. Resuming past
+      // last of its eight pauses to get the complete diagram. Resuming past
       // that one advances to the next scene, so stop there.
-      for (let i = 0; i < 3; i++) await advancePause(page);
+      for (let i = 0; i < 7; i++) await advancePause(page);
       await sleep(1000);
     },
   },

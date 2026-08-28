@@ -68,6 +68,15 @@ const isDisabledSel = (page, sel) => page.evaluate(
 const count         = (page, sel) => page.evaluate(
   sel => document.querySelectorAll(sel).length, sel);
 
+/**
+ * Number of scene-3 transition arrows that have finished fading in. Opacity is
+ * set as a presentation attribute by D3, so read the computed value rather than
+ * the attribute to stay correct if that ever moves into CSS.
+ */
+const visibleArrows = page => page.evaluate(() =>
+  [...document.querySelectorAll('.transition-arrow')]
+    .filter(el => parseFloat(getComputedStyle(el).opacity) > 0.99).length);
+
 const textOf        = (page, sel) => page.evaluate(
   sel => document.querySelector(sel)?.textContent ?? '', sel);
 
@@ -151,7 +160,38 @@ try {
     'stale "(Phase 3)" placeholder text is gone');
   assert((await nodeRole(page, 'A')) === null, 'no cluster nodes in title scene');
 
-  // ── 1b. Initialisation scene ────────────────────────────────────────────────
+  // ── 1b. Role-transition state diagram ───────────────────────────────────────
+  suite('Scene 3 — Role transitions (seven edges, ending on slide 8)');
+
+  await page.evaluate(() => { window.location.hash = 'state-diagram'; });
+  await waitFor(page, () =>
+    document.getElementById('scene-title')?.textContent.includes('3 / 14'));
+  await waitFor(page, AT_PAUSE);
+
+  const t3 = await sceneTitle(page);
+  assert(t3.includes('3 / 14'), `scene counter "3 / 14" (got "${t3}")`);
+  assert((await visibleArrows(page)) === 0,
+    'no transition arrows revealed at the first pause (circles only)');
+
+  // Seven reveals follow the circles: two entry edges plus the five role
+  // changes of the lecture's state machine.
+  for (let i = 0; i < 7; i++) await advancePause(page);
+  await sleep(700);   // let the last fade-in transition finish
+
+  assert((await count(page, '.transition-arrow')) === 7,
+    'all seven transition arrows drawn');
+  assert((await visibleArrows(page)) === 7,
+    'all seven transition arrows revealed by the last pause');
+
+  // The leader step-down must highlight slide 8 (the LogResponse handler),
+  // not slide 3 — a leader never runs the candidate's VoteResponse handler.
+  const sl3 = await pseudoLabel(page);
+  assert(sl3.includes('8 / 9'),
+    `leader step-down highlights pseudocode slide "8 / 9" (got "${sl3}")`);
+  assert((await hlCount(page)) === 5,
+    `STEP_DOWN_8 highlights 5 lines (got ${await hlCount(page)})`);
+
+  // ── 1c. Initialisation scene ────────────────────────────────────────────────
   suite('Scene 4 — Initialisation (three followers in term 0)');
 
   await page.evaluate(() => { window.location.hash = 'raft-init'; });
