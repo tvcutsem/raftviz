@@ -41,7 +41,7 @@ highlights the exact lines of pseudocode being executed.
 |  |  |
 |--|--|
 | ![Scene 6: a follower evaluates an incoming VoteRequest](media/shot-voting.png) | ![Scene 3: the follower / candidate / leader state diagram](media/shot-state-diagram.png) |
-| **Voting** — a follower checks `cTerm` and log freshness against its own state, next to the `on receiving (VoteRequest…)` handler that implements it. | **Role transitions** — how a node moves between follower, candidate and leader, and what triggers each edge. |
+| **Voting** — a follower checks `cTerm` and log freshness against its own state, next to the `on receiving (VoteRequest…)` handler that implements it. | **Role transitions** — every edge of the state machine, one step at a time: both ways into the follower state (start-up and crash recovery), the three role changes, and the candidate's election-timeout retry. Each arrow highlights the handler that implements it. |
 | ![Scene 8: a client command is appended to the leader's log and broadcast](media/shot-replication.png) | ![Scene 10: the leader commits an entry once a quorum has acknowledged it](media/shot-commit.png) |
 | **Replication** — a client command lands in the leader's log and goes out to the followers as a `LogRequest`. | **Commit** — once a quorum has acknowledged, the entry turns green and is delivered to each node's state machine. |
 

@@ -418,6 +418,7 @@ export const HL = {
   RECOVERY:           [1, [6, 7, 8]],
   TIMER_RESET:        [1, [20]],              // "start election timer" line only
   ELECTION_TIMEOUT:   [1, [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]],
+  ELECTION_RETRY:     [1, [10, 11]],          // same handler, re-entered on timeout
   VOTE_REQ_SEND:      [1, [16, 17, 18, 19]],
 
   // — Slide 2 —
