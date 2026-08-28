@@ -1,13 +1,11 @@
 node_modules/
 .DS_Store
+commit.mjs
 
 # Intermediate WebM recordings from tools/capture.js (kept only with --keep-webm).
 docs/media/.tmp/
 
 # The .gif and .png assets in docs/media/ *are* committed — the README and
 # docs/GUIDE.md embed them. The .mp4 versions are not: nothing in the docs
-# references them (GitHub will not render a <video> from a relative repo path),
-# they are only for blog posts and slides, and keeping several MB of video out
-# of git history is worth more than the convenience. Rebuild them any time with
-# `npm run media`.
+# references them, they are only for blog posts and slides.
 docs/media/*.mp4
