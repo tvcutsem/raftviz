@@ -13,6 +13,8 @@ highlights the algorithm pseudocode being executed.</sup>
 **→ [Guided tour of the visualisation](docs/GUIDE.md)** — what each scene shows,
 the interactive sandbox, keyboard controls, and the colour language.
 
+**→ [Blog post](https://tvcutsem.github.io/raftviz-post)** — write-up of the pedagogy behind the project, and my experiences building it with agents.
+
 This material is used as part of my Distributed Systems class at KU Leuven university.
 
 It was inspired by, and draws material from, three primary sources:
